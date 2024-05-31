@@ -1,0 +1,46 @@
+﻿@model TodoViewModel
+
+@{
+    ViewData["Title"] = "Todo";
+}
+
+<div class="m-auto mt-5" style="max-width: 600px;">
+    <h1 class="display-6 text-center">Todo</h1>
+    <div class="d-flex flex-column gap-2">
+        <form class="row g-2" method="post">
+            <div class="col-6">
+                <input class="form-control" name="Text" type="text" placeholder="Введіть задачу">
+            </div>
+            <div class="col-3">
+                <select class="form-select" name="CategoryId">
+                    @foreach(var category in Model.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <button class="btn btn-primary col-3">Додати</button>
+        </form>
+        <div class="d-flex py-2 px-3 flex-column gap-2 border rounded">
+            @if (Model.Tasks.Count() == 0)
+            {
+                <p class="text-center mt-3">Задачі відсутні</p>
+            }
+            @foreach (var task in Model.Tasks)
+            {
+                var style = task.Completed ? "text-decoration-line-through" : "";
+
+                <label class="row align-items-center bg-light p-3 rounded" style="cursor: pointer;" onClick="completeTask(@task.Id, @task.Completed.ToString().ToLower())">
+                    <div class="col-1 text-center">
+                        <input class="form-check-input" checked="@task.Completed" value="@task.Id" type="checkbox">
+                    </div>
+                    <div class="col-7 @style">@task.Text</div>
+                    <div class="col-3 border-start border-primary">@task.Category</div>
+                    <div class="col-1 text-center">
+                        <button class="btn btn-close" type="button" onclick="deleteTask(@task.Id)"></button>
+                    </div>
+                </label>
+            }
+        </div>
+    </div>
+</div>
