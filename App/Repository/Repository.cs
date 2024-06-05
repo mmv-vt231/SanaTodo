@@ -2,7 +2,6 @@
 using App.DTO;
 using App.Models;
 using Dapper;
-using System.Threading.Tasks;
 
 namespace App.Repository
 {

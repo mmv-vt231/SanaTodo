@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<storage>
+  <categories>
+    <category>
+      <id>1</id>
+      <name>Дім</name>
+    </category>
+    <category>
+      <id>2</id>
+      <name>Робота</name>
+    </category>
+    <category>
+      <id>3</id>
+      <name>Навчання</name>
+    </category>
+    <category>
+      <id>4</id>
+      <name>Інше</name>
+    </category>
+  </categories>
+  <tasks>
+    <task>
+      <id>1</id>
+      <text>Задача 3</text>
+      <completed>true</completed>
+      <endDate />
+      <categoryId>3</categoryId>
+    </task>
+  </tasks>
+</storage>

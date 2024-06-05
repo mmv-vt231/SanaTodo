@@ -1,5 +1,6 @@
 using App.DTO;
 using App.Models;
+using App.Models.ViewModels;
 using App.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -8,11 +9,13 @@ namespace App.Controllers
 {
 	public class HomeController : Controller
 	{
+        private readonly IRepositoryController _repositoryController;
 		private readonly IRepository _repository;
 
-        public HomeController(IRepository repository)
+        public HomeController(IRepositoryController repositoryController)
         {
-            _repository = repository;
+            _repositoryController = repositoryController;
+            _repository = repositoryController.Load();
         }
 
 		public IActionResult Index()
@@ -24,6 +27,7 @@ namespace App.Controllers
             {
                 Categories = categories,
 				Tasks = tasks,
+                Storage = _repositoryController.Storage
             };
 
 			return View(data);
@@ -32,14 +36,18 @@ namespace App.Controllers
 		[HttpPost]
         public IActionResult Index(CreateTaskDTO task)
 		{
-			if(ModelState.IsValid)
-			{
-                _repository.CreateTask(task);
-				return RedirectToAction("Index");
-            }
+            _repository.CreateTask(task);
 
-			return View();
-		}
+			return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ChangeStorage(string storage)
+        {
+            _repositoryController.ChangeRepository(storage);
+
+            return RedirectToAction("Index");
+        }
 
         [HttpPost("todo/complete")]
         public IActionResult CompleteTask(int id, bool completed)

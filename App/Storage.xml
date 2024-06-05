@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<storage>
+  <categories>
+    <category>
+      <id>1</id>
+      <name>Дім</name>
+    </category>
+  </categories>
+  <tasks>
+    <task>
+      <id>1</id>
+      <text>Завдання 1</text>
+      <completed>true</completed>
+      <endDate>null</endDate>
+      <categoryId>1</categoryId>
+    </task>
+    <task>
+      <id>2</id>
+      <text>Завдання 2</text>
+      <completed>false</completed>
+      <endDate>01.06.2024 19:52:00</endDate>
+      <categoryId>1</categoryId>
+    </task>
+  </tasks>
+</storage>

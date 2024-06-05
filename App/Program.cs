@@ -1,14 +1,21 @@
 using App.Database;
 using App.Repository;
+using App.XMLStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddSingleton<IXMLFactory, XMLFactory>();
+
+builder.Services.AddScoped<IRepositoryController, RepositoryController>();
 builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<IXMLRepository, XMLRepository>();
 
 var app = builder.Build();
 
@@ -25,6 +32,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
