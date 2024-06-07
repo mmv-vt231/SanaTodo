@@ -14,14 +14,42 @@ namespace App.Repository
             _connectionFactory = connectionFactory;
         }
 
-        public void CreateTask(CreateTaskDTO task)
+        public IEnumerable<GetTasksDTO> GetTasksWithCategory()
         {
             using var connection = _connectionFactory.Create();
 
-            connection.Execute("INSERT INTO Tasks (Text, Completed, EndDate, CategoryId) VALUES (@Text, 'false', @EndDate, @CategoryId)", task);
+            var tasks = connection.Query<GetTasksDTO>(@"
+                SELECT Tasks.Id, Tasks.Text, Tasks.Completed, Tasks.EndDate, Categories.Name AS Category
+                FROM Tasks
+                JOIN Categories ON Tasks.CategoryId = Categories.Id");
+
+            return tasks;
         }
 
-        public void DeleteTask(int id)
+        public IEnumerable<Models.Task> GetTasks()
+        {
+            using var connection = _connectionFactory.Create();
+
+            var tasks = connection.Query<Models.Task>(@"SELECT * FROM Tasks");
+
+            return tasks;
+        }
+
+        public int CreateTask(CreateTaskDTO task)
+        {
+            using var connection = _connectionFactory.Create();
+
+            var id = connection.QuerySingle<int>(@"
+                INSERT INTO Tasks (Text, Completed, EndDate, CategoryId) 
+                OUTPUT INSERTED.Id
+                VALUES (@Text, 'false', @EndDate, @CategoryId)",
+                task
+            );
+
+            return id;
+        }
+
+        public int DeleteTask(int id)
         {
             using var connection = _connectionFactory.Create();
 
@@ -29,19 +57,24 @@ namespace App.Repository
                 "DELETE FROM Tasks WHERE Id = @Id", 
                 new { Id = id }
             );
+
+            return id;
         }
 
-        public void CompleteTask(int id, bool completed)
+        public int CompleteTask(int id, bool completed)
         {
             using var connection = _connectionFactory.Create();
 
-            connection.Execute(
-                "UPDATE Tasks SET Completed = @Completed WHERE Id = @Id", 
+            connection.Execute(@"
+                UPDATE Tasks SET Completed = @Completed
+                WHERE Id = @Id", 
                 new {
                     Id = id, 
                     Completed = !completed
                 }
             );
+
+            return id;
         }
 
         public IEnumerable<Category> GetCategories()
@@ -53,17 +86,16 @@ namespace App.Repository
             return categories;
         }
 
-        public IEnumerable<GetTasksDTO> GetTasks()
+        public Category GetCategory(int id)
         {
             using var connection = _connectionFactory.Create();
-            
-            var tasks = connection.Query<GetTasksDTO>(
-                "SELECT Tasks.Id, Tasks.Text, Tasks.Completed, Tasks.EndDate, Categories.Name AS Category " +
-                "FROM Tasks " +
-                "INNER JOIN Categories ON Tasks.CategoryId = Categories.Id");
 
-            return tasks;
+            var category = connection.QueryFirst<Category>(
+                "SELECT * FROM Categories WHERE Id = @Id",
+                new { Id = id }
+            );
+
+            return category;
         }
-
     }
 }

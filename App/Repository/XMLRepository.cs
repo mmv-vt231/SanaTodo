@@ -14,20 +14,63 @@ namespace App.Repository
             _connectionFactory = connectionFactory;
         }
 
-        public void CompleteTask(int id, bool completed)
+        public IEnumerable<GetTasksDTO> GetTasksWithCategory()
         {
-            XDocument storage = _connectionFactory.Load();
+            XElement storage = _connectionFactory.Load().Element("storage");
 
-            storage.Element("storage")
-                .Element("tasks")
+            var tasks = storage.Element("tasks")
                 .Descendants("task")
-                .FirstOrDefault(t => (int)t.Element("id") == id)
-                .Element("completed").Value = (!completed).ToString().ToLower();
+                .Select(t =>
+                {
+                    var category = storage.Element("categories")
+                        .Descendants("category")
+                        .FirstOrDefault(c => (int)c.Element("id") == (int)t.Element("categoryId"))
+                        .Element("name").Value;
 
-            _connectionFactory.Save(storage);
+                    DateTime? endData = !string.IsNullOrEmpty(t.Element("endDate").Value) && t.Element("endDate").Value != "null"
+                        ? DateTime.Parse(t.Element("endDate").Value)
+                        : null;
+
+                    return new GetTasksDTO
+                    {
+                        Id = (int)t.Element("id"),
+                        Text = (string)t.Element("text"),
+                        Completed = (bool)t.Element("completed"),
+                        EndDate = endData,
+                        Category = category
+                    };
+                })
+                .ToList();
+
+            return tasks;
         }
 
-        public void CreateTask(CreateTaskDTO task)
+        public IEnumerable<Models.Task> GetTasks()
+        {
+            XElement storage = _connectionFactory.Load().Element("storage");
+
+            var tasks = storage.Element("tasks")
+                .Descendants("task")
+                .Select(t =>
+                {
+                    DateTime? endData = !string.IsNullOrEmpty(t.Element("endDate").Value) && t.Element("endDate").Value != "null"
+                        ? DateTime.Parse(t.Element("endDate").Value)
+                        : null;
+
+                    return new Models.Task
+                    {
+                        Id = (int)t.Element("id"),
+                        Text = (string)t.Element("text"),
+                        Completed = (bool)t.Element("completed"),
+                        EndDate = endData,
+                    };
+                })
+                .ToList();
+
+            return tasks;
+        }
+
+        public int CreateTask(CreateTaskDTO task)
         {
             XDocument storage = _connectionFactory.Load();
 
@@ -49,9 +92,26 @@ namespace App.Repository
                 ));
 
             _connectionFactory.Save(storage);
+
+            return id;
         }
 
-        public void DeleteTask(int id)
+        public int CompleteTask(int id, bool completed)
+        {
+            XDocument storage = _connectionFactory.Load();
+
+            storage.Element("storage")
+                .Element("tasks")
+                .Descendants("task")
+                .FirstOrDefault(t => (int)t.Element("id") == id)
+                .Element("completed").Value = (!completed).ToString().ToLower();
+
+            _connectionFactory.Save(storage);
+
+            return id;
+        }
+
+        public int DeleteTask(int id)
         {
             XDocument storage = _connectionFactory.Load();
 
@@ -62,6 +122,8 @@ namespace App.Repository
                 .Remove();
 
             _connectionFactory.Save(storage);
+
+            return id;
         }
 
         public IEnumerable<Category> GetCategories()
@@ -80,27 +142,9 @@ namespace App.Repository
             return categories;
         }
 
-        public IEnumerable<GetTasksDTO> GetTasks()
+        public Category GetCategory(int id)
         {
-            XElement storage = _connectionFactory.Load().Element("storage");
-
-            var tasks = storage.Element("tasks")
-                .Descendants("task")
-                .Select(t => new GetTasksDTO
-                {
-                    Id = (int)t.Element("id"),
-                    Text = (string)t.Element("text"),
-                    Completed = (bool)t.Element("completed"),
-                    EndDate = !string.IsNullOrEmpty(t.Element("endDate").Value) && t.Element("endDate").Value != "null"
-                                ? DateTime.Parse(t.Element("endDate").Value)
-                                : null,
-                    Category = storage.Element("categories")
-                                .Descendants("category")
-                                .FirstOrDefault(c => (int)c.Element("id") == (int)t.Element("categoryId")).Element("name").Value
-                })
-                .ToList();
-
-            return tasks;
+            throw new NotImplementedException();
         }
     }
 }

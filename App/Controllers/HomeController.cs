@@ -21,7 +21,7 @@ namespace App.Controllers
 		public IActionResult Index()
 		{
             IEnumerable<Category> categories = _repository.GetCategories();
-			IEnumerable<GetTasksDTO> tasks = _repository.GetTasks();
+			IEnumerable<GetTasksDTO> tasks = _repository.GetTasksWithCategory();
 
 			var data = new TodoViewModel
             {

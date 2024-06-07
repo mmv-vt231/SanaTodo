@@ -5,10 +5,12 @@ namespace App.Repository
 {
     public interface IRepository
     {
+        IEnumerable<GetTasksDTO> GetTasksWithCategory();
+        IEnumerable<Models.Task> GetTasks();
+        int CreateTask(CreateTaskDTO task);
+        int DeleteTask(int id);
+        int CompleteTask(int id, bool completed);
         IEnumerable<Category> GetCategories();
-        IEnumerable<GetTasksDTO> GetTasks();
-        void CreateTask(CreateTaskDTO task);
-        void DeleteTask(int id);
-        void CompleteTask(int id, bool completed);
+        Category GetCategory(int id);
     }
 }

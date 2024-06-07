@@ -1,10 +1,16 @@
 using App.Database;
+using App.GraphQL.Mutation;
+using App.GraphQL.Query;
+using App.GraphQL.Scheme;
+using App.GraphQL.Type;
 using App.Repository;
 using App.XMLStorage;
+using GraphiQl;
+using GraphQL;
+using GraphQL.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSession();
@@ -16,6 +22,24 @@ builder.Services.AddSingleton<IXMLFactory, XMLFactory>();
 builder.Services.AddScoped<IRepositoryController, RepositoryController>();
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IXMLRepository, XMLRepository>();
+
+builder.Services.AddTransient<APIScheme>();
+
+builder.Services.AddTransient<CategoryType>();
+builder.Services.AddTransient<TaskType>();
+builder.Services.AddTransient<TaskInputType>();
+
+builder.Services.AddTransient<RootQuery>();
+builder.Services.AddTransient<CategoryQuery>();
+builder.Services.AddTransient<TaskQuery>();
+
+builder.Services.AddTransient<RootMutation>();
+builder.Services.AddTransient<TaskMutation>();
+
+builder.Services.AddGraphQL(options => 
+	options.AddAutoSchema<ISchema>()
+	.AddSystemTextJson()
+    .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true));
 
 var app = builder.Build();
 
@@ -31,6 +55,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseGraphQL<APIScheme>();
+app.UseGraphiQl("/graphql");
 
 app.UseSession();
 app.UseAuthorization();
