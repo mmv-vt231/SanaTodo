@@ -146,5 +146,10 @@ namespace App.Repository
         {
             throw new NotImplementedException();
         }
+
+        public Task<IDictionary<int, Category>> GetCategoriesById(IEnumerable<int> ids, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,7 +4,7 @@
     {
         string Storage { get; }
 
-        IRepository Load();
-        void ChangeRepository(string storage);
+        public IRepository Load();
+        string ChangeRepository(string storage);
     }
 }

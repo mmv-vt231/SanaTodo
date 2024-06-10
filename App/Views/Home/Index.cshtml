@@ -54,15 +54,10 @@
             }
             <div class="py-2 border-top">
                 <form class="row g-2" method="post" asp-controller="Home" asp-action="ChangeStorage">
-                    <div class="col-9">
-                        <select class="form-select" name="Storage" required>
-                            <option selected="@(Model.Storage == "db")" value="db">База даних</option>
-                            <option selected="@(Model.Storage == "xml")" value="xml">XML сховище</option>
-                        </select>
-                    </div>
-                    <div class="col-3">
-                        <button class="btn btn-primary w-100">Змінити</button>
-                    </div>
+                    <select id="storage" class="form-select" name="Storage" onchange="changeStorage()" required>
+                        <option selected="@(Model.Storage == "db")" value="db">База даних</option>
+                        <option selected="@(Model.Storage == "xml")" value="xml">XML сховище</option>
+                    </select>
                 </form>
             </div>
         </div>

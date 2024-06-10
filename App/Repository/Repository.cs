@@ -86,6 +86,18 @@ namespace App.Repository
             return categories;
         }
 
+        public async Task<IDictionary<int, Category>> GetCategoriesById(IEnumerable<int> ids, CancellationToken cancellationToken)
+        {
+            using var connection = _connectionFactory.Create();
+
+            var categories = await connection.QueryAsync<Category>(
+                "SELECT * FROM Categories WHERE Id IN @Ids",
+                new { Ids = ids }
+            );
+
+            return categories.ToDictionary(x => x.Id);
+        }
+
         public Category GetCategory(int id)
         {
             using var connection = _connectionFactory.Create();

@@ -7,6 +7,7 @@ using App.Repository;
 using App.XMLStorage;
 using GraphiQl;
 using GraphQL;
+using GraphQL.DataLoader;
 using GraphQL.Types;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,9 +20,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
 builder.Services.AddSingleton<IXMLFactory, XMLFactory>();
 
-builder.Services.AddScoped<IRepositoryController, RepositoryController>();
-builder.Services.AddScoped<IRepository, Repository>();
-builder.Services.AddScoped<IXMLRepository, XMLRepository>();
+builder.Services.AddSingleton<IRepositoryController, RepositoryController>();
+builder.Services.AddSingleton<IRepository, Repository>();
+builder.Services.AddSingleton<IXMLRepository, XMLRepository>();
 
 builder.Services.AddTransient<APIScheme>();
 
@@ -30,16 +31,16 @@ builder.Services.AddTransient<TaskType>();
 builder.Services.AddTransient<TaskInputType>();
 
 builder.Services.AddTransient<RootQuery>();
-builder.Services.AddTransient<CategoryQuery>();
-builder.Services.AddTransient<TaskQuery>();
-
 builder.Services.AddTransient<RootMutation>();
-builder.Services.AddTransient<TaskMutation>();
 
 builder.Services.AddGraphQL(options => 
 	options.AddAutoSchema<ISchema>()
 	.AddSystemTextJson()
-    .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true));
+    .AddErrorInfoProvider(opt => opt.ExposeExceptionStackTrace = true)
+    .AddDataLoader());
+
+builder.Services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
+builder.Services.AddSingleton<DataLoaderDocumentListener>();
 
 var app = builder.Build();
 

@@ -46,10 +46,10 @@ namespace App.Controllers
         {
             _repositoryController.ChangeRepository(storage);
 
-            return RedirectToAction("Index");
+            return Ok();
         }
 
-        [HttpPost("todo/complete")]
+        [HttpPost]
         public IActionResult CompleteTask(int id, bool completed)
         {
             _repository.CompleteTask(id, completed);
@@ -57,7 +57,7 @@ namespace App.Controllers
 			return Ok();
         }
 
-        [HttpDelete("todo/delete")]
+        [HttpDelete]
         public IActionResult DeleteTask(int id)
         {
             _repository.DeleteTask(id);

@@ -18,20 +18,26 @@
             _repository = repository;
         }
 
-        public void ChangeRepository(string storage)
+        public string ChangeRepository(string storage)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (httpContext is not null)
+            switch (storage)
             {
-                httpContext.Session.SetString("storage", storage);
-                Storage = storage;
+                case "xml":
+                    Storage = "xml";
+                    break;
+
+                default:
+                    Storage = "db";
+                    break;
             }
+
+            return storage;
         }
 
         public IRepository Load()
         {
-            var storage = _httpContextAccessor?.HttpContext?.Session.GetString("storage");
+            var headerStorage = _httpContextAccessor.HttpContext?.Request.Headers["storage"];
+            var storage = string.IsNullOrEmpty(headerStorage) ? Storage : headerStorage.ToString();
 
             switch (storage)
             {

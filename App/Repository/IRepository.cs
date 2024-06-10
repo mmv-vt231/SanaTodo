@@ -11,6 +11,7 @@ namespace App.Repository
         int DeleteTask(int id);
         int CompleteTask(int id, bool completed);
         IEnumerable<Category> GetCategories();
+        Task<IDictionary<int, Category>> GetCategoriesById(IEnumerable<int> ids, CancellationToken cancellationToken);
         Category GetCategory(int id);
     }
 }
