@@ -1,37 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import store from "../store/store";
+
+const initialFormData = {
+  text: "",
+  category: "1",
+  endDate: "",
+};
 
 function TodoForm() {
+  const [formData, setFormData] = useState(initialFormData);
+
+  const { text, category, endDate } = formData;
+
   const dispatch = useDispatch();
   const categories = useSelector(state => state.categories);
 
-  console.log(store.getState());
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
 
-  const handleSubmit = e => {
-    e.preventDefault();
+    setFormData(data => ({ ...data, [name]: value }));
+  };
 
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-
-    dispatch({ type: "ADD_TODO", payload: data });
-
-    e.target.reset();
+  const handleSubmit = () => {
+    dispatch({ type: "ADD_TODO", payload: formData });
+    setFormData(initialFormData);
   };
 
   return (
-    <form className="row g-2" onSubmit={handleSubmit}>
+    <div className="row g-2">
       <div className="col-12">
         <input
           className="form-control"
           name="text"
           type="text"
           placeholder="Введіть задачу"
+          onChange={handleChange}
+          value={text}
           required
         />
       </div>
       <div className="col-4">
-        <select className="form-select" name="category" required>
+        <select
+          className="form-select"
+          name="category"
+          onChange={handleChange}
+          value={category}
+          required
+        >
           {categories.map(({ id, label }, i) => (
             <option key={i} value={id}>
               {label}
@@ -40,12 +55,20 @@ function TodoForm() {
         </select>
       </div>
       <div className="col-4">
-        <button className="btn btn-primary w-100">Додати</button>
+        <button className="btn btn-primary w-100" type="button" onClick={handleSubmit}>
+          Додати
+        </button>
       </div>
       <div className="col-4">
-        <input className="form-control" name="endDate" type="datetime-local" />
+        <input
+          className="form-control"
+          name="endDate"
+          type="datetime-local"
+          onChange={handleChange}
+          value={endDate}
+        />
       </div>
-    </form>
+    </div>
   );
 }
 

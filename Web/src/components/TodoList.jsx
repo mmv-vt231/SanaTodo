@@ -28,7 +28,7 @@ function TodoList() {
         <p className="text-center mt-3">Задачі відсутні</p>
       )}
       <div className="py-2 border-top">
-        <form className="row g-2" method="post">
+        <div className="row g-2">
           <select
             className="form-select"
             onChange={handleChangeStorage}
@@ -38,7 +38,7 @@ function TodoList() {
             <option value="db">База даних</option>
             <option value="xml">XML сховище</option>
           </select>
-        </form>
+        </div>
       </div>
     </div>
   );
