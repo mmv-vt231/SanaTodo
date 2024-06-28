@@ -35,18 +35,18 @@ namespace App.Repository
             return tasks;
         }
 
-        public int CreateTask(CreateTaskDTO task)
+        public Models.Task CreateTask(CreateTaskDTO task)
         {
             using var connection = _connectionFactory.Create();
 
-            var id = connection.QuerySingle<int>(@"
+            var taskData = connection.QuerySingle<Models.Task>(@"
                 INSERT INTO Tasks (Text, Completed, EndDate, CategoryId) 
-                OUTPUT INSERTED.Id
+                OUTPUT INSERTED.*
                 VALUES (@Text, 'false', @EndDate, @CategoryId)",
                 task
             );
 
-            return id;
+            return taskData;
         }
 
         public int DeleteTask(int id)

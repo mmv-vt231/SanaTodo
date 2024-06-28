@@ -7,7 +7,7 @@ namespace App.Repository
     {
         IEnumerable<GetTasksDTO> GetTasksWithCategory();
         IEnumerable<Models.Task> GetTasks();
-        int CreateTask(CreateTaskDTO task);
+        Models.Task CreateTask(CreateTaskDTO task);
         int DeleteTask(int id);
         int CompleteTask(int id, bool completed);
         IEnumerable<Category> GetCategories();

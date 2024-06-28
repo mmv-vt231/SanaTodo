@@ -12,15 +12,7 @@ namespace App.GraphQL.Mutation
         {
             var repository = repositoryController.Load();
 
-            Field<StringGraphType>("ChangeStorage")
-                .Arguments(new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "storage" }
-                ))
-                .Resolve(context => repositoryController.ChangeRepository(
-                    context.GetArgument<string>("storage")
-                ));
-
-            Field<IntGraphType>("CreateTask")
+            Field<TaskType>("CreateTask")
                 .Arguments(new QueryArguments(
                     new QueryArgument<TaskInputType> { Name = "task" }
                 ))

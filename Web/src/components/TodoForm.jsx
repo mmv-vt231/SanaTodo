@@ -1,19 +1,21 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { actions, useStore } from "../store/rxStore";
 
 const initialFormData = {
   text: "",
-  category: "1",
+  categoryId: 1,
   endDate: "",
 };
 
 function TodoForm() {
+  const { categories } = useStore();
+
   const [formData, setFormData] = useState(initialFormData);
+  const { text, categoryId, endDate } = formData;
 
-  const { text, category, endDate } = formData;
-
-  const dispatch = useDispatch();
-  const categories = useSelector(state => state.categories);
+  useEffect(() => {
+    actions.getCategories();
+  }, []);
 
   const handleChange = ({ target }) => {
     const { name, value } = target;
@@ -22,7 +24,15 @@ function TodoForm() {
   };
 
   const handleSubmit = () => {
-    dispatch({ type: "ADD_TODO", payload: formData });
+    const correctEndDate = endDate ? new Date(endDate).toISOString() : null;
+
+    const data = {
+      text,
+      endDate: correctEndDate,
+      categoryId: +categoryId,
+    };
+
+    actions.addTask(data);
     setFormData(initialFormData);
   };
 
@@ -42,14 +52,14 @@ function TodoForm() {
       <div className="col-4">
         <select
           className="form-select"
-          name="category"
+          name="categoryId"
           onChange={handleChange}
-          value={category}
+          value={categoryId}
           required
         >
-          {categories.map(({ id, label }, i) => (
+          {categories?.map(({ id, name }, i) => (
             <option key={i} value={id}>
-              {label}
+              {name}
             </option>
           ))}
         </select>

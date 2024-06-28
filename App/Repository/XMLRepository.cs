@@ -63,6 +63,7 @@ namespace App.Repository
                         Text = (string)t.Element("text"),
                         Completed = (bool)t.Element("completed"),
                         EndDate = endData,
+                        CategoryId = (int)t.Element("categoryId"),
                     };
                 })
                 .ToList();
@@ -70,7 +71,7 @@ namespace App.Repository
             return tasks;
         }
 
-        public int CreateTask(CreateTaskDTO task)
+        public Models.Task CreateTask(CreateTaskDTO task)
         {
             XDocument storage = _connectionFactory.Load();
 
@@ -81,19 +82,27 @@ namespace App.Repository
 
             var id = lastTask != null ? (int)lastTask.Element("id") + 1 : 1;
 
+            var newTask = new XElement("task",
+                new XElement("id", id),
+                new XElement("text", task.Text),
+                new XElement("completed", false),
+                new XElement("endDate", task.EndDate),
+                new XElement("categoryId", task.CategoryId)
+            );
+
             storage.Element("storage")
                 ?.Element("tasks")
-                ?.Add(new XElement("task", 
-                    new XElement("id", id),
-                    new XElement("text", task.Text),
-                    new XElement("completed", false),
-                    new XElement("endDate", task.EndDate),
-                    new XElement("categoryId", task.CategoryId)
-                ));
+                ?.Add(newTask);
 
             _connectionFactory.Save(storage);
 
-            return id;
+            return new Models.Task { 
+                Id = id,
+                Text = task.Text,
+                Completed = false,
+                EndDate = task.EndDate,
+                CategoryId = task.CategoryId,
+            };
         }
 
         public int CompleteTask(int id, bool completed)
@@ -144,12 +153,35 @@ namespace App.Repository
 
         public Category GetCategory(int id)
         {
-            throw new NotImplementedException();
+            XDocument storage = _connectionFactory.Load();
+
+            var category = storage.Element("storage")
+                .Element("categories")
+                .Descendants("category")
+                .FirstOrDefault(c => (int)c.Element("id") == id);
+
+            return new Category
+            {
+                Id = (int)category.Element("id"),
+                Name = (string)category.Element("name")
+            };
         }
 
-        public Task<IDictionary<int, Category>> GetCategoriesById(IEnumerable<int> ids, CancellationToken cancellationToken)
+        public async Task<IDictionary<int, Category>> GetCategoriesById(IEnumerable<int> ids, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            XDocument storage = _connectionFactory.Load();
+
+            var categories = storage.Element("storage")
+                .Element("categories")
+                .Descendants("category")
+                .Where(c => ids.Contains((int)c.Element("id")))
+                .Select(c => new Category
+                {
+                    Id = (int)c.Element("id"),
+                    Name = (string)c.Element("name")
+                }).ToList();
+
+            return categories.ToDictionary(x => x.Id);
         }
     }
 }

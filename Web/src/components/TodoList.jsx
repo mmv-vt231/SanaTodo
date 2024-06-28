@@ -1,29 +1,26 @@
-import React from "react";
-import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { actions, useStore } from "../store/rxStore";
+
 import TodoItem from "./TodoItem";
 
-const selectTodos = state =>
-  state.todos.map(todo => ({
-    ...todo,
-    category: state.categories.filter(el => el.id == todo.category)[0].label,
-  }));
-
 function TodoList() {
-  const dispatch = useDispatch();
-  const storage = useSelector(state => state.storage);
-  const todos = useSelector(selectTodos, shallowEqual);
+  const { tasks = [] } = useStore();
+  const storage = localStorage.getItem("storage") ?? "db";
+
+  useEffect(() => {
+    actions.getTasks();
+  }, []);
 
   const handleChangeStorage = e => {
     const storage = e.target.value;
-
-    dispatch({ type: "CHANGE_STORAGE", payload: { storage } });
     localStorage.setItem("storage", storage);
+    actions.getTasks();
   };
 
   return (
     <div className="d-flex py-2 px-3 flex-column gap-2 border rounded">
-      {todos.length ? (
-        todos.map(todo => <TodoItem key={todo.id} {...todo} />)
+      {tasks.length ? (
+        tasks.map(todo => <TodoItem key={todo.id} {...todo} />)
       ) : (
         <p className="text-center mt-3">Задачі відсутні</p>
       )}

@@ -26,5 +26,12 @@
       <endDate />
       <categoryId>3</categoryId>
     </task>
+    <task>
+      <id>2</id>
+      <text>dasda</text>
+      <completed>false</completed>
+      <endDate>2024-06-29T12:02:00Z</endDate>
+      <categoryId>1</categoryId>
+    </task>
   </tasks>
 </storage>

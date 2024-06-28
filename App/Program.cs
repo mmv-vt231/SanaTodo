@@ -5,7 +5,6 @@ using App.GraphQL.Scheme;
 using App.GraphQL.Type;
 using App.Repository;
 using App.XMLStorage;
-using GraphiQl;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -55,10 +54,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 app.UseRouting();
 
 app.UseGraphQL<APIScheme>();
-app.UseGraphiQl("/graphql");
+app.UseGraphQLGraphiQL();
 
 app.UseSession();
 app.UseAuthorization();

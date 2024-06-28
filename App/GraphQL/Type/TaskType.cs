@@ -7,7 +7,7 @@ namespace App.GraphQL.Type
 {
     public class TaskType : ObjectGraphType<Models.Task>
     {
-        public TaskType(IDataLoaderContextAccessor accessor, IRepository repository)
+        public TaskType(IDataLoaderContextAccessor accessor, IRepositoryController repositoryController)
         {
             Field(t => t.Id);
             Field(t => t.Text);
@@ -18,6 +18,8 @@ namespace App.GraphQL.Type
             Field<CategoryType, Category>("Category")
                 .ResolveAsync(context =>
                 {
+                    var repository = repositoryController.Load();
+
                     var loader = accessor.Context.GetOrAddBatchLoader<int, Category>("GetCategoriesById", repository.GetCategoriesById);
 
                     return loader.LoadAsync(context.Source.CategoryId);
