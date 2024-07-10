@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { actions, useStore } from "../store/rxStore";
+import { useDispatch, useSelector } from "react-redux";
 
 const initialFormData = {
   text: "",
@@ -8,13 +8,14 @@ const initialFormData = {
 };
 
 function TodoForm() {
-  const { categories } = useStore();
+  const dispatch = useDispatch();
+  const categories = useSelector(state => state.categories);
 
   const [formData, setFormData] = useState(initialFormData);
   const { text, categoryId, endDate } = formData;
 
   useEffect(() => {
-    actions.getCategories();
+    dispatch({ type: "GET_CATEGORIES" });
   }, []);
 
   const handleChange = ({ target }) => {
@@ -32,7 +33,7 @@ function TodoForm() {
       categoryId: +categoryId,
     };
 
-    actions.addTask(data);
+    dispatch({ type: "ADD_TASK", payload: data });
     setFormData(initialFormData);
   };
 

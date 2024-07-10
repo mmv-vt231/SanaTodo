@@ -1,20 +1,21 @@
 import React, { useEffect } from "react";
-import { actions, useStore } from "../store/rxStore";
+import { useDispatch, useSelector } from "react-redux";
 
 import TodoItem from "./TodoItem";
 
 function TodoList() {
-  const { tasks = [] } = useStore();
+  const dispatch = useDispatch();
+  const tasks = useSelector(state => state.tasks);
   const storage = localStorage.getItem("storage") ?? "db";
 
   useEffect(() => {
-    actions.getTasks();
+    dispatch({ type: "GET_TASKS" });
   }, []);
 
   const handleChangeStorage = e => {
     const storage = e.target.value;
     localStorage.setItem("storage", storage);
-    actions.getTasks();
+    dispatch({ type: "GET_TASKS" });
   };
 
   return (

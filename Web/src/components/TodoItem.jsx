@@ -1,18 +1,20 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import dateConverter from "../utils/dateConverter";
-import { actions } from "../store/rxStore";
 
 function TodoItem({ id, text, endDate, category, completed }) {
+  const dispatch = useDispatch();
+
   const formatedEndDate = endDate && dateConverter(endDate);
   const textStyle = completed ? "text-decoration-line-through" : "";
 
   const handleToggleComplete = () => {
-    actions.toggleTask(completed, id);
+    dispatch({ type: "TOGGLE_TASK", payload: { completed, id } });
   };
 
   const handleDelete = e => {
     e.stopPropagation();
-    actions.deleteTask(id);
+    dispatch({ type: "DELETE_TASK", payload: { id } });
   };
 
   return (
